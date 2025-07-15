@@ -30,7 +30,7 @@
 #**Review checking step for data structure consistency**
 #     You will see stars "*" on headers where user edits are required.
 #
-# Version: 9
+# Version: 11
 # Date: March 12, 2024
 # Author: Tyne M. Baker
 # Change Log: 
@@ -42,7 +42,10 @@
 #   20APR2023- V6 Add steps to check for misplaced audio files and remove non-audio files.
 #   26APR2023- V7 Add file size column to original dataframe.
 #   26JUN2023- V8 Add sampling frequency and length to original dataframe.
-#.  12MAR2024- V9 Add AI disclosure, tidy script.
+#   12MAR2024- V9 Add AI disclosure, tidy script.
+#   06MAY2024- V10 Revise the Time and Date parsing to account for converted W4V 
+#                   files from Wildlife Acoustics.
+#   25NOV2024- V11 Revise time and date to pull info in reference to file suffix.
 
 # ------Clear the Workspace-------
 rm(list = ls())
@@ -123,7 +126,7 @@ view(file_df)
 #------Check that your data structure is consistent*----
 
 # Define audio file extensions
-audio_exten <- c(".wav", ".mp3", ".zc", ".w4V")
+audio_exten <- c(".wav", ".mp3", ".zc", ".w4v")
 
 # find rows that don't match the audio-file pattern
 files_unmatched <- file_df[!grepl(paste(audio_exten, collapse = "|"), file_df$file_name), ]
@@ -205,23 +208,23 @@ view(file_track)
 #-----Pull the time out of the file name into a new column-----
 
 # Create a function to find the "." before the file extension type
-getLocation <- function(x) {
-    location <- nchar(x) - tail(unlist(gregexpr('\\.', x)), n=1) + 1
+getdot <- function(x) {
+    location <- tail(unlist(gregexpr("\\.", x)), n=1)
     return(location)
     }
 
 # Pull the values that represent time in the file_name based off your specified manufacturer.
 
 for (i in seq_along(file_track$file_name)) {
-  location <- getLocation(file_track$file_name[i])
-    if (device_manuf %in% c("Wildlife Acoustics", "Open Acoustic Devices", "Cornell")) {
-    file_track$time[i] <- str_sub(file_track$file_name[i], -6-location, -1-location)
+  if (device_manuf %in% c("Wildlife Acoustics", "Open Acoustic Devices", "Cornell")) {
+    location <- getdot(file_track$file_name[i])
+    file_track$time[i] <- str_sub(file_track$file_name[i], location-6, location-1) 
   } else if (device_manuf == "Titley Scientific") {
-    file_track$time[i] <- str_sub(file_track$file_name[i], -8-location, -1-location)
+    location <- getdot(file_track$file_name[i])
+    file_track$time[i] <- str_sub(file_track$file_name[i], location-8, location-1)
   } else if (device_manuf == "Frontier Labs") {
-    file_track$time<-str_sub(file_track$file_name,10,15)
+    file_track$time[i]<-str_sub(file_track$file_name[i],10,15)
   } else {
-    print("No date column created")
   }}
 
 # Check if "time" column exists and format time (HH:MM:SS).
@@ -241,12 +244,14 @@ if ("time" %in% colnames(file_track)) {
 
 # Pull the values that represent date in the file_name based off your specified manufacturer.
 for (i in seq_along(file_track$file_name)) {
-  location <- getLocation(file_track$file_name[i])
     if (device_manuf %in% c("Wildlife Acoustics", "Open Acoustic Devices", "Cornell")) {
-    file_track$date[i] <- str_sub(file_track$file_name[i], -15-location, -8-location)
+    location <- getdot(file_track$file_name[i])
+    file_track$date[i] <- str_sub(file_track$file_name[i], location-15, location-8)
   } else if (device_manuf == "Titley Scientific") {
-    file_track$date[i] <- str_sub(file_track$file_name[i], -19-location, -10-location)
+    location <- getdot(file_track$file_name[i])
+    file_track$date[i] <- str_sub(file_track$file_name[i], location-20, location-10)
   } else if (device_manuf == "Frontier Labs") {
+    location <- getdot(file_track$file_name[i])
     file_track$date<-str_sub(file_track$file_name,1,8)
   } else {
   }}
