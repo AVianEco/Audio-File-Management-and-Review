@@ -1,5 +1,0 @@
-Step 2 TODOs:
-- Plot file duration and sampling frequency. Needs:
-			1. Add bar graphs showing % captured number of files matching programmed duration, and those not matching.
-			2. Add bar graph showing % captured number of files matching programmed sampling frequency, and those not matching.
-			
