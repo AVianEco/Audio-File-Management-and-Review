@@ -9,8 +9,7 @@
 # Input: A file directory with acoustic files. This directory can include subfolders. 
 # Note however, to create a CSV that can be used with A/Vian Eco's recording deficiency 
 # analysis scripts all audio files MUST be on the same level of your data structure.
-#
-# Two examples are given below for clarity on what is meant by "same level of data structure"
+#Two examples are given below for clarity on what is meant by "same level of data structure"
 #
 # E.g. GOOD: some files in Project_name/Site_1/2023/March/data/audiofile.filetype and 
 # some files in Project_name/Site_2/2024/May/data/audiofile.filetype would work.
@@ -22,30 +21,16 @@
 #
 # Dependencies: This script requires the libraries listed under "load libraries" to run. 
 #
-# AI Disclosure: OpenAI's ChatGPT 3.5 was used for coding assistance while 
-# developing this R Script.
+# AI Disclosure: Several versions of OpenAI's ChatGPT and Google Gemini were used 
+# for coding assistance while developing this R Script.
 #
 #**User Modifcations Required: The user must: *
 #**define location of files, Output CSV name, new Column headers, and device manufacturer. *#
 #**Review checking step for data structure consistency**
 #     You will see stars "*" on headers where user edits are required.
 #
-# Version: 11
-# Date: March 12, 2024
 # Author: Tyne M. Baker
-# Change Log: 
-#   24JAN2023- V1- Initial drafting of functional script.
-#   31JAN2023- V2 Clean-up and formatting to match other AVian scripts.
-#   1FEB2023- V3 Add "remove non .wav files" functionality.
-#   18APR2023- V4 Add device specifications to improve time-date parsing.
-#   19APR2023- V5 Add device-specific time and date parsing steps.
-#   20APR2023- V6 Add steps to check for misplaced audio files and remove non-audio files.
-#   26APR2023- V7 Add file size column to original dataframe.
-#   26JUN2023- V8 Add sampling frequency and length to original dataframe.
-#   12MAR2024- V9 Add AI disclosure, tidy script.
-#   06MAY2024- V10 Revise the Time and Date parsing to account for converted W4V 
-#                   files from Wildlife Acoustics.
-#   25NOV2024- V11 Revise time and date to pull info in reference to file suffix.
+
 
 # ------Clear the Workspace-------
 rm(list = ls())
@@ -126,7 +111,7 @@ view(file_df)
 #------Check that your data structure is consistent*----
 
 # Define audio file extensions
-audio_exten <- c(".wav", ".mp3", ".zc", ".w4v")
+audio_exten <- c(".wav", ".mp3", ".zc", ".w4v",".WAV")
 
 # find rows that don't match the audio-file pattern
 files_unmatched <- file_df[!grepl(paste(audio_exten, collapse = "|"), file_df$file_name), ]
@@ -179,15 +164,11 @@ for (i in 1:nrow(file_track)) {
     
     # Duration in seconds
     duration <- length(audio@left) / audio@samp.rate
-    
-    #file size in bytes
-    file_size_bytes <- file_info$size
-    
+
     # Assign values to new columns
     file_track$sampling_frequency[i] <- sampling_frequency
     file_track$duration_s[i] <- duration
-    file_track$file_size_mb[i] <- file_size_bytes/(1024*1024)
-    
+
     #describe progress in the console
     cat("Processed file", i, "of", nrow(file_track), "files\n")
   }, error = function(e) {
@@ -196,7 +177,7 @@ for (i in 1:nrow(file_track)) {
     # Optionally, you can set default values for the columns to indicate the file couldn't be processed.
     # For example, file_track$sampling_frequency[i] <- NA
     #                          file_track$duration_s[i] <- NA
-    #                          file_track$file_size_mb[i] <- NA
+    
   }, warning = function(w) {
     # Handle warnings
     cat("Warning in processing file", i, ":", conditionMessage(w), "\n")
@@ -267,6 +248,8 @@ if ("date" %in% colnames(file_track)) {
 } else {
   message("Date column not created")
 }
+
+#----Export the final summary-----
 
 #review the final file_track database*
 view(file_track)
