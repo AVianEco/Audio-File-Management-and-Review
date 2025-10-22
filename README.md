@@ -7,7 +7,7 @@ Create a tracking database for audio files gleaned from wildlife recording devic
 - Step 1: Creating a CSV for Audio File Tracking
 - Step 2: Find Difficiencies in Scheduled Recordings
 
-*Upcoming scripts will allow user to scrutinize this file list for recording deficiencies. Work in progress.
+*Upcoming scripts will allow user to pull sample files and review in Audacity, Raven, or Kailedoscope. Work in progress.
 
 ## USAGE ##
 This code is intended to be customized to your specific project. Users will need to open and review the code prior to use. Each script has a pre-amble. The pre-amble contains a section called "User Modifications Required". This section describes which portions of code are customizeable to the user's project. 
