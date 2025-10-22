@@ -5,6 +5,7 @@ Create a tracking database for audio files gleaned from wildlife recording devic
 
 ### AVAILABLE SCRIPTS ###
 - Step 1: Creating a CSV for Audio File Tracking
+- Step 2: Find Difficiencies in Scheduled Recordings
 
 *Upcoming scripts will allow user to scrutinize this file list for recording deficiencies. Work in progress.
 
